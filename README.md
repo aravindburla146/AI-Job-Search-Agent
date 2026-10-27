@@ -43,7 +43,7 @@ A Python-based job discovery and matching tool that collects public job listings
 
 The results are written to the configured Excel workbook, normally `job_tracker.xlsx`.
 
-## Important limitations
+## Important Limitations
 
 - The available sources do not cover every job opportunity.
 - Remote listings may restrict applicants by country or location.
