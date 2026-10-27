@@ -14,7 +14,7 @@ DEFAULTS = {
     "himalayas_search_pages": 2,
     "role_keywords": ["soc analyst", "soc", "cybersecurity analyst", "cyber security analyst", "security analyst", "information security", "vapt", "penetration tester", "vulnerability assessment", "security operations", "network support", "network engineer", "noc engineer", "network security", "it support", "technical support", "service desk", "help desk", "system administrator", "cybersecurity intern", "security intern", "networking intern", "it intern", "internship", "graduate", "fresher", "entry level", "junior security analyst"],
     "skill_keywords": ["python", "linux", "networking", "tcp/ip", "dns", "dhcp", "http", "https", "nmap", "wireshark", "tcpdump", "burp suite", "vulnerability assessment", "penetration testing", "incident response", "siem", "flask", "sql", "windows", "firewall", "network security", "soc", "splunk", "security operations"],
-    "fresher_signals": ["fresher", "entry level", "entry-level", "junior", "intern", "internship", "graduate", "new grad", "0-1 year", "0Ã¢â‚¬â€œ1 year", "no experience", "trainee", "early career", "associate"],
+    "fresher_signals": ["fresher", "entry level", "entry-level", "junior", "intern", "internship", "graduate", "new grad", "0-1 year", "0 - œ1 year", "no experience", "trainee", "early career", "associate"],
     "search_queries": ["cybersecurity", "SOC analyst", "security analyst", "VAPT", "network support", "NOC engineer", "IT support", "security internship"]
 }
 S = requests.Session()
@@ -73,13 +73,13 @@ def himalayas(c):
                 seen.add(guid)
                 restrictions = x.get("locationRestrictions") or []
                 countries = [txt(r.get("name") if isinstance(r, dict) else r) for r in restrictions]
-                loc = "Remote Ã¢â‚¬â€ " + (", ".join(countries) if countries else "Worldwide / no country restriction")
+                loc = "Remote  -   " + (", ".join(countries) if countries else "Worldwide / no country restriction")
                 country_ok = not restrictions or any(isinstance(r, dict) and (str(r.get("alpha2", "")).upper() == "IN" or "india" in str(r.get("name", "")).lower()) for r in restrictions)
                 note = "Himalayas country search matched India; verify employer requirements before applying."
                 if not country_ok: note = "Check the source country restrictions carefully before applying."
                 salary = ""
                 if x.get("minSalary") is not None or x.get("maxSalary") is not None:
-                    salary = f"{txt(x.get('currency'))} {x.get('minSalary', '?')}Ã¢â‚¬â€œ{x.get('maxSalary', '?')} {txt(x.get('salaryPeriod'))}".strip()
+                    salary = f"{txt(x.get('currency'))} {x.get('minSalary', '?')} - œ{x.get('maxSalary', '?')} {txt(x.get('salaryPeriod'))}".strip()
                 out.append({"title": x.get("title"), "company": x.get("companyName") or x.get("company"), "location": loc, "mode": "Remote", "description": x.get("description") or x.get("excerpt"), "skills": x.get("categories") or x.get("parentCategories") or [], "salary": salary, "posted": date_value(x.get("pubDate")), "url": url, "source": "Himalayas", "experience": txt(x.get("seniority")) or txt(x.get("employmentType")), "eligibility_note": note})
             if len(batch) < 20: break
             time.sleep(0.25)
@@ -93,7 +93,7 @@ def remoteok(c):
     for x in d:
         if not isinstance(x, dict) or not x.get("position"): continue
         jid = x.get("id")
-        out.append({"title": x.get("position"), "company": x.get("company"), "location": x.get("location") or "Remote Ã¢â‚¬â€ India eligibility unclear", "mode": "Remote", "description": x.get("description"), "skills": x.get("tags") or [], "salary": " - ".join(str(x[k]) for k in ("salary_min", "salary_max") if x.get(k)), "posted": x.get("date"), "url": x.get("url") or (f"https://remoteok.com/remote-jobs/{jid}" if jid else ""), "source": "Remote OK", "experience": "", "eligibility_note": "This feed does not confirm India eligibility; check the original listing."})
+        out.append({"title": x.get("position"), "company": x.get("company"), "location": x.get("location") or "Remote  -   India eligibility unclear", "mode": "Remote", "description": x.get("description"), "skills": x.get("tags") or [], "salary": " - ".join(str(x[k]) for k in ("salary_min", "salary_max") if x.get(k)), "posted": x.get("date"), "url": x.get("url") or (f"https://remoteok.com/remote-jobs/{jid}" if jid else ""), "source": "Remote OK", "experience": "", "eligibility_note": "This feed does not confirm India eligibility; check the original listing."})
     return out
 
 
@@ -105,7 +105,7 @@ def arbeitnow(c):
         if not batch: break
         for x in batch:
             rem = bool(x.get("remote"))
-            out.append({"title": x.get("title"), "company": x.get("company_name"), "location": x.get("location") or ("Remote Ã¢â‚¬â€ India eligibility unclear" if rem else "Location not specified"), "mode": "Remote" if rem else "On-site/Hybrid Ã¢â‚¬â€ verify", "description": x.get("description"), "skills": x.get("tags") or [], "salary": "", "posted": date_value(x.get("created_at")), "url": x.get("url"), "source": "Arbeitnow", "experience": "", "eligibility_note": "Check the employer listing for India location and work eligibility."})
+            out.append({"title": x.get("title"), "company": x.get("company_name"), "location": x.get("location") or ("Remote  -   India eligibility unclear" if rem else "Location not specified"), "mode": "Remote" if rem else "On-site/Hybrid  -   verify", "description": x.get("description"), "skills": x.get("tags") or [], "salary": "", "posted": date_value(x.get("created_at")), "url": x.get("url"), "source": "Arbeitnow", "experience": "", "eligibility_note": "Check the employer listing for India location and work eligibility."})
         time.sleep(0.25)
     return out
 
@@ -143,27 +143,27 @@ def location_relevance(job):
     if any(term in location for term in india_terms):
         return "India location indicated", note or "Confirm the exact work location and hiring eligibility on the employer page."
     if source == "himalayas" and ("india" in location or "worldwide / no country restriction" in location.lower()):
-        return "Remote Ã¢â‚¬â€ India search / unrestricted; verify", note or "Confirm India eligibility, timezone, and work authorization on the employer page."
+        return "Remote  -   India search / unrestricted; verify", note or "Confirm India eligibility, timezone, and work authorization on the employer page."
     if "remote" in location or txt(job.get("mode")).lower() == "remote":
-        return "Remote Ã¢â‚¬â€ India eligibility unconfirmed", note or "Remote does not necessarily mean worldwide; confirm India is an eligible hiring location."
+        return "Remote  -   India eligibility unconfirmed", note or "Remote does not necessarily mean worldwide; confirm India is an eligible hiring location."
     if location and location not in ("location not specified", "unknown"):
-        return "Location outside/unclear for India Ã¢â‚¬â€ verify", note or "Check whether the employer accepts applicants based in India before applying."
-    return "Location unclear Ã¢â‚¬â€ verify", note or "Location is unclear in the feed; check the original employer listing."
+        return "Location outside/unclear for India  -   verify", note or "Check whether the employer accepts applicants based in India before applying."
+    return "Location unclear  -   verify", note or "Location is unclear in the feed; check the original employer listing."
 
 
 def experience_assessment(job, fresher_signal):
     """Estimate experience fit conservatively; never reject unclear requirements."""
     text = (txt(job.get("title")) + " " + txt(job.get("description")) + " " + txt(job.get("experience"))).lower()
     # Clear early-career signals first.
-    if re.search(r"\b(0\s*[-Ã¢â‚¬â€œ]\s*2|0\s*to\s*2|0\s*[-Ã¢â‚¬â€œ]\s*1|1\s*[-Ã¢â‚¬â€œ]\s*2)\s*(years?|yrs?)\b", text):
-        return "Likely suitable Ã¢â‚¬â€ 0Ã¢â‚¬â€œ2 years indicated"
+    if re.search(r"\b(0\s*[- - œ]\s*2|0\s*to\s*2|0\s*[- - œ]\s*1|1\s*[- - œ]\s*2)\s*(years?|yrs?)\b", text):
+        return "Likely suitable  -   0 - œ2 years indicated"
     if any(x in text for x in ["no experience", "fresher", "entry-level", "entry level", "new grad", "graduate role", "graduate program", "graduate programme", "internship", "intern", "trainee", "early career"]):
-        return "Potential fresher fit Ã¢â‚¬â€ verify requirements"
+        return "Potential fresher fit  -   verify requirements"
     if re.search(r"\b(3|4|5|6|7|8|9|10)\s*\+?\s*(years?|yrs?)\b", text) or any(x in text for x in ["senior", "principal", "staff engineer", "lead engineer", "manager"]):
-        return "May require 3+ years / experienced Ã¢â‚¬â€ review manually"
+        return "May require 3+ years / experienced  -   review manually"
     if fresher_signal:
-        return "Potential entry-level fit Ã¢â‚¬â€ verify requirements"
-    return "Experience unclear Ã¢â‚¬â€ review manually"
+        return "Potential entry-level fit  -   verify requirements"
+    return "Experience unclear  -   review manually"
 
 
 def posted_age_days(value):
@@ -208,14 +208,14 @@ def posted_age_days(value):
 def freshness_label(value):
     age = posted_age_days(value)
     if age is None:
-        return "Posting date unclear Ã¢â‚¬â€ verify"
+        return "Posting date unclear  -   verify"
     if age < 0:
-        return "Future/invalid date Ã¢â‚¬â€ verify"
+        return "Future/invalid date  -   verify"
     if age <= 7:
-        return f"Recent Ã¢â‚¬â€ {age} day(s) old"
+        return f"Recent  -   {age} day(s) old"
     if age <= 30:
-        return f"Posted {age} days ago Ã¢â‚¬â€ verify open"
-    return f"Potentially stale Ã¢â‚¬â€ {age} days old; verify"
+        return f"Posted {age} days ago  -   verify open"
+    return f"Potentially stale  -   {age} days old; verify"
 
 
 def style_tracker_sheet(ws):
@@ -293,7 +293,7 @@ def main():
     path = HERE / c["output_file"]
     alljobs = []
 
-    print("AI Job Search Agent Ã¢â‚¬â€ India-focused update")
+    print("AI Job Search Agent  -   India-focused update")
     print("Existing jobs will be reassessed; application statuses and personal notes will be preserved.")
 
     for name, fn in [
@@ -375,7 +375,7 @@ def main():
         experience_status = experience_assessment(x, fresh)
         freshness = freshness_label(x.get("posted"))
 
-        experience = txt(x.get("experience")) or "Not specified Ã¢â‚¬â€ verify"
+        experience = txt(x.get("experience")) or "Not specified  -   verify"
         skills = x.get("skills") or []
         if isinstance(skills, (list, tuple, set)):
             skills_text = ", ".join(str(v) for v in skills if v)
@@ -401,7 +401,7 @@ def main():
         ).strip()
 
         listing_status = (
-            "Potentially stale Ã¢â‚¬â€ verify"
+            "Potentially stale  -   verify"
             if freshness.startswith("Potentially stale")
             else "Needs verification"
         )
@@ -431,7 +431,7 @@ def main():
                 # Do not erase existing information with an empty source field.
                 if header == "Job Category" and value == "Other / Review":
                     continue
-                if header == "Experience Required" and value == "Not specified Ã¢â‚¬â€ verify":
+                if header == "Experience Required" and value == "Not specified  -   verify":
                     if nonempty(get_value(row_num, header)):
                         continue
                 if nonempty(value):
@@ -456,7 +456,7 @@ def main():
                 "Discovered Date": today,
                 "Job Title": title,
                 "Company": company,
-                "Location": location or "Location not specified Ã¢â‚¬â€ verify",
+                "Location": location or "Location not specified  -   verify",
                 "Work Mode": mode,
                 "Job Category": cat,
                 "Experience Required": experience,
