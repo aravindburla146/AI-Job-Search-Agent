@@ -1,0 +1,25 @@
+﻿# Python environment and generated files
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local job records and backups
+job_tracker.xlsx
+job_tracker_test.xlsx
+job_tracker_backup.xlsx
+job_agent_backup.py
+job_agent_final_backup.py
+job_agent_before_*.py
+job_tracker_before_*.xlsx
+job_tracker_test_*.xlsx
+
+# Local secrets and environment settings
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
